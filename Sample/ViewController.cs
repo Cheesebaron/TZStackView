@@ -27,12 +27,14 @@ namespace Sample
             View.BackgroundColor = UIColor.Black;
             Title = "TZStackView";
 
-            _stackView = new StackView(CreateViews());
-            _stackView.TranslatesAutoresizingMaskIntoConstraints = false;
-            _stackView.Axis = UILayoutConstraintAxis.Vertical;
-            _stackView.Distribution = Distribution.Fill;
-            _stackView.Alignment = Alignment.Fill;
-            _stackView.Spacing = 15;
+            _stackView = new StackView(CreateViews())
+            {
+                TranslatesAutoresizingMaskIntoConstraints = false,
+                Axis = UILayoutConstraintAxis.Vertical,
+                Distribution = Distribution.Fill,
+                Alignment = Alignment.Fill,
+                Spacing = 15
+            };
             Add(_stackView);
 
             _instructionLabel.TranslatesAutoresizingMaskIntoConstraints = false;
@@ -83,12 +85,15 @@ namespace Sample
             _distributionSegmentedControl.ValueChanged += (s, __) => DistributionChanged(s as UISegmentedControl);
             _distributionSegmentedControl.TintColor = UIColor.LightGray;
 
-            var controlsLayoutContainer = new StackView(new UIView[] {
+            var controlsLayoutContainer = new StackView(new UIView[]
+            {
                 _axisSegmentedControl, _alignmentSegmentedControl, _distributionSegmentedControl
-            });
-            controlsLayoutContainer.Axis = UILayoutConstraintAxis.Vertical;
-            controlsLayoutContainer.TranslatesAutoresizingMaskIntoConstraints = false;
-            controlsLayoutContainer.Spacing = 5;
+            })
+            {
+                Axis = UILayoutConstraintAxis.Vertical,
+                TranslatesAutoresizingMaskIntoConstraints = false,
+                Spacing = 5
+            };
             controlsLayoutContainer.SetContentHuggingPriority(1000, UILayoutConstraintAxis.Vertical);
             Add(controlsLayoutContainer);
 
