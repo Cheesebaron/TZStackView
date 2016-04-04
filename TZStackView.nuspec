@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>TZStackView</id>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <title>TZStackView</title>
     <authors>Tomasz Cielecki</authors>
     <owners>Tomasz Cielecki</owners>
@@ -13,6 +13,8 @@
     <tags>xamarin monotouch ios stackview</tags>
     <iconUrl>http://i.imgur.com/V3983YY.png</iconUrl>
     <releaseNotes>
+0.0.2
+Added simple Storyboard support
 0.0.1
 Initial release
     </releaseNotes>
