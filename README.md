@@ -9,7 +9,7 @@ instead of resolving to use explicit view constraints.
 - Complete API of `UIStackView` with all distribution and alignment options
 - Animation of hidden property
 
-- **NO** support for storyboards.
+- Support for storyboards.
 
 ## Installing
 Add the TZStackView nuget to your Xamarin.iOS project
