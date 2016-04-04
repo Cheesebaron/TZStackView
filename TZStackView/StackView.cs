@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using Foundation;
-using ObjCRuntime;
 using UIKit;
 using CoreGraphics;
 using CoreAnimation;
 
 namespace TZStackView
 {
+    [Register("TZStackView")]
+    [DesignTimeVisible(true)]
     public class StackView : UIView
     {
         private readonly ObservableCollection<UIView> _arrangedSubviews = new ObservableCollection<UIView>();
@@ -23,6 +25,7 @@ namespace TZStackView
         private Distribution _distribution = Distribution.Fill;
         private UILayoutConstraintAxis _axis = UILayoutConstraintAxis.Horizontal;
 
+        [Export("Disribution"), Browsable(true)]
         public Distribution Distribution
         {
             get { return _distribution; }
@@ -33,6 +36,7 @@ namespace TZStackView
             }
         }
 
+        [Export("Alignment"), Browsable(true)]
         public Alignment Alignment
         {
             get { return _alignment; }
@@ -43,6 +47,7 @@ namespace TZStackView
             }
         }
 
+        [Export("Axis"), Browsable(true)]
         public UILayoutConstraintAxis Axis
         {
             get { return _axis; }
@@ -55,7 +60,10 @@ namespace TZStackView
 
         public IEnumerable<UIView> ArrangedSubviews => _arrangedSubviews;
 
+        [Export("LayoutMarginsRelative"), Browsable(true)]
         public bool LayoutMarginsRelativeArrangement { get; set; } = false;
+
+        [Export("Spacing"), Browsable(true)]
         public float Spacing { get; set; } = 0f;
 
         private void ArrangedSubviewsChanged(object s,
@@ -72,14 +80,25 @@ namespace TZStackView
                 	AddHiddenListener(subview);
         }
 
+        public StackView(IntPtr handle) : base(handle) { }
+
         public StackView(IEnumerable<UIView> arrangedSubviews = null) 
             : base(CGRect.Empty)
         {
 			_arrangedSubviews.CollectionChanged += ArrangedSubviewsChanged;
+            Initialize(arrangedSubviews);
+        }
 
+        public override void AwakeFromNib()
+        {
+            Initialize();
+        }
+
+        private void Initialize(IEnumerable<UIView> arrangedSubviews = null)
+        {
             if (arrangedSubviews == null)
                 arrangedSubviews = new List<UIView>();
-            
+
             foreach (var subview in arrangedSubviews)
             {
                 subview.TranslatesAutoresizingMaskIntoConstraints = false;
@@ -109,10 +128,9 @@ namespace TZStackView
 			if (keyPath != "hidden") return;
 
             var layer = ofObject as CALayer;
-			if (layer == null) return;
 
-			// Delegate/WeakDelegate is usually the UIView on CALayer
-			var view = layer.WeakDelegate as UIView;
+            // Delegate/WeakDelegate is usually the UIView on CALayer
+			var view = layer?.WeakDelegate as UIView;
 			if (view == null)
 				return;
 
@@ -509,17 +527,19 @@ namespace TZStackView
         {
             var constraints = new List<NSLayoutConstraint>();
 
+            var viewss = views.ToArray();
+
             UIView previousView = null;
-            foreach(var view in views)
+            foreach(var view in viewss)
             {
                 if (previousView != null)
                 {
                     var c = 0f;
                     if (!IsHidden(previousView) && !IsHidden(view))
                         c = constant;
-                    else if (IsHidden(previousView) && !IsHidden(view) && views.FirstOrDefault() != previousView)
+                    else if (IsHidden(previousView) && !IsHidden(view) && !Equals(viewss.FirstOrDefault(), previousView))
                         c = (constant / 2f);
-                    else if (!IsHidden(previousView) && IsHidden(view) && views.LastOrDefault() != view)
+                    else if (!IsHidden(previousView) && IsHidden(view) && !Equals(viewss.LastOrDefault(), view))
                         c = (constant / 2f);
 
                     if (Axis == UILayoutConstraintAxis.Horizontal)
@@ -577,7 +597,7 @@ namespace TZStackView
         {
             var constraints = new List<NSLayoutConstraint>();
 
-            var visibleViews = _arrangedSubviews.Where(v => !IsHidden(v));
+            var visibleViews = _arrangedSubviews.Where(v => !IsHidden(v)).ToArray();
             var firstView = visibleViews.FirstOrDefault();
             var lastView = visibleViews.LastOrDefault();
 
@@ -649,11 +669,13 @@ namespace TZStackView
             var currentPriority = priority;
             var constraints = new List<NSLayoutConstraint>();
 
-            if (views != null && views.Any())
+            var viewss = views.ToArray();
+
+            if (views != null && viewss.Any())
             {
                 UIView firstView = null;
-                var countDownPriority = (currentPriority < 1000);
-                foreach(var view in views)
+                var countDownPriority = currentPriority < 1000;
+                foreach(var view in viewss)
                 {
                     if (firstView != null)
                         constraints.Add(Constraint(firstView, attribute, view2: view, priority: currentPriority));
