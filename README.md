@@ -1,4 +1,7 @@
 # TZStackView
+
+[![Build status](https://ci.appveyor.com/api/projects/status/rhogj0gqtl5fpkmj?svg=true)](https://ci.appveyor.com/project/Cheesebaron/tzstackview)
+
 This is a port of [Tom van Zummeren's][tvz] [TZStackView][tzstackview], which provides a backport of UIStackView, which was introduced in iOS 9.
 
 StackView provides an easy way to lay out views horizontally and vertically and UIStackView is the new recommended way to lay out things in iOS 9,
