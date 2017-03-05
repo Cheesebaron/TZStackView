@@ -530,7 +530,10 @@ namespace TZStackView
                 totalCount++;
             }
 
-            totalSize += (totalCount - 1)*Spacing;
+            totalSize += (totalCount - 1) * Spacing;
+
+            if (totalSize <= 0)
+                totalSize = 1;
 
             var priority = 1000f;
             var countDownPriority = viewss.Count(v => !IsHidden(v)) > 1;
