@@ -50,6 +50,7 @@ Task("Package")
 	.Does(() => {
 	if (IsRunningOnWindows()) //pdbstr.exe and costura are not xplat currently
 		GitLink(sln.GetDirectory(), new GitLinkSettings {
+			RepositoryUrl = "https://github.com/Cheesebaron/TZStackView",
 			ArgumentCustomization = args => args.Append("-ignore Sample")
 		});
 
