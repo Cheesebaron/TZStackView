@@ -56,12 +56,8 @@ Task("Package")
 
 	EnsureDirectoryExists(outputDir);
 
-	var dllDir = binDir + "/TZStackView.*";
-
-	Information("Dll Dir: {0}", dllDir);
-
-	var files = GetFiles(dllDir + "/**/*")
-				- GetFiles(dllDir + "/**/*.mdb") // no mdb files please
+	var files = GetFiles(binDir + "/**/*")
+				- GetFiles(binDir + "/**/*.mdb"); // no mdb files please
 
 	var nugetContent = new List<NuSpecContent>();
 	foreach(var dll in files){
@@ -96,7 +92,6 @@ Task("Package")
 
 Task("UploadAppVeyorArtifact")
 	.IsDependentOn("Package")
-	.WithCriteria(() => !isPullRequest)
 	.WithCriteria(() => isRunningOnAppVeyor)
 	.Does(() => {
 
