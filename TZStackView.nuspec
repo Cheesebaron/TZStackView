@@ -4,8 +4,4 @@
     <id>TZStackView</id>
     <description>UIStackView backport for iOS 7 and 8 for Xamarin.iOS</description>
   </metadata>
-  <files>   
-    <file src="TZStackView\**\*.cs" target="src\TZStackView" />
-	  <file src="Sample\**\*.cs" target="src\Sample" />
-  </files>
 </package>

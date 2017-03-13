@@ -15,17 +15,19 @@ namespace TZStackView
     [DesignTimeVisible(true)]
     public class StackView : UIView
     {
-        private readonly ObservableCollection<UIView> _arrangedSubviews = new ObservableCollection<UIView>();
+        private readonly ObservableCollection<UIView> _arrangedSubviews =
+            new ObservableCollection<UIView>();
         private readonly List<UIView> _registeredHiddenObserverViews = new List<UIView>();
         private readonly List<UIView> _animatingToHiddenViews = new List<UIView>();
         private readonly List<UIView> _spacerViews = new List<UIView>();
-        private readonly List<NSLayoutConstraint> _stackViewConstraints = new List<NSLayoutConstraint>();
-        private readonly List<NSLayoutConstraint> _subviewConstraints = new List<NSLayoutConstraint>();
+        private readonly List<NSLayoutConstraint> _stackViewConstraints =
+            new List<NSLayoutConstraint>();
+        private readonly List<NSLayoutConstraint> _subviewConstraints =
+            new List<NSLayoutConstraint>();
         private Alignment _alignment = Alignment.Fill;
         private Distribution _distribution = Distribution.Fill;
         private UILayoutConstraintAxis _axis = UILayoutConstraintAxis.Horizontal;
 
-        [Export("Disribution"), Browsable(true)]
         public Distribution Distribution
         {
             get { return _distribution; }
@@ -36,7 +38,13 @@ namespace TZStackView
             }
         }
 
-        [Export("Alignment"), Browsable(true)]
+        [Export("Disribution"), Browsable(true)]
+        public int DistributionValue
+        {
+            get { return (int)Distribution; }
+            set { Distribution = (Distribution)value; }
+        }
+
         public Alignment Alignment
         {
             get { return _alignment; }
@@ -47,7 +55,13 @@ namespace TZStackView
             }
         }
 
-        [Export("Axis"), Browsable(true)]
+        [Export("Alignment"), Browsable(true)]
+        public int AlignmentValue
+        {
+            get { return (int)Alignment; }
+            set { Alignment = (Alignment)value; }
+        }
+
         public UILayoutConstraintAxis Axis
         {
             get { return _axis; }
@@ -56,6 +70,13 @@ namespace TZStackView
                 _axis = value;
                 SetNeedsUpdateConstraints();
             }
+        }
+
+        [Export("Axis"), Browsable(true)]
+        public int AxisValue
+        {
+            get { return (int)Axis; }
+            set { Axis = (UILayoutConstraintAxis)value; }
         }
 
         public IEnumerable<UIView> ArrangedSubviews => _arrangedSubviews;
@@ -82,16 +103,40 @@ namespace TZStackView
 
         public StackView(IntPtr handle) : base(handle) { }
 
-        public StackView(IEnumerable<UIView> arrangedSubviews = null) 
+        public StackView(IEnumerable<UIView> arrangedSubviews = null)
             : base(CGRect.Empty)
         {
-			_arrangedSubviews.CollectionChanged += ArrangedSubviewsChanged;
+            _arrangedSubviews.CollectionChanged += ArrangedSubviewsChanged;
             Initialize(arrangedSubviews);
+        }
+
+        public StackView(CGRect frame)
+            : base(frame)
+        {
+            _arrangedSubviews.CollectionChanged += ArrangedSubviewsChanged;
+            Initialize();
         }
 
         public override void AwakeFromNib()
         {
-            Initialize();
+            foreach (var constraint in Constraints)
+            {
+                if (constraint.GetType().Name == "NSIBPrototypingLayoutConstraint")
+                {
+                    RemoveConstraint(constraint);
+                }
+            }
+
+            foreach (var view in Subviews)
+                AddArrangedSubview(view);
+        }
+
+        public override void PrepareForInterfaceBuilder()
+        {
+            base.PrepareForInterfaceBuilder();
+
+            foreach (var view in Subviews)
+                AddArrangedSubview(view);
         }
 
         private void Initialize(IEnumerable<UIView> arrangedSubviews = null)
@@ -485,7 +530,10 @@ namespace TZStackView
                 totalCount++;
             }
 
-            totalSize += (totalCount - 1)*Spacing;
+            totalSize += (totalCount - 1) * Spacing;
+
+            if (totalSize <= 0)
+                totalSize = 1;
 
             var priority = 1000f;
             var countDownPriority = viewss.Count(v => !IsHidden(v)) > 1;
