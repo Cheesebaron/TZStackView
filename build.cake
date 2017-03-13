@@ -56,12 +56,11 @@ Task("Package")
 
 	EnsureDirectoryExists(outputDir);
 
-	var dllDir = binDir + "/TZStackView.*";
-
-	Information("Dll Dir: {0}", dllDir);
+	var files = GetFiles(binDir + "/**/*")
+				- GetFiles(binDir + "/**/*.mdb"); // no mdb files please
 
 	var nugetContent = new List<NuSpecContent>();
-	foreach(var dll in GetFiles(dllDir)){
+	foreach(var dll in files){
 	 	Information("File: {0}", dll.ToString());
 		nugetContent.Add(new NuSpecContent {
 			Target = "lib/Xamarin.iOS10",
@@ -86,13 +85,13 @@ Task("Package")
 		OutputDirectory = outputDir,
 		Verbosity = NuGetVerbosity.Detailed,
 		Files = nugetContent,
-		BasePath = "/."
+		BasePath = "/.",
+		ReleaseNotes = ParseReleaseNotes("./releasenotes.md").Notes.ToArray()
 	});
 });
 
 Task("UploadAppVeyorArtifact")
 	.IsDependentOn("Package")
-	.WithCriteria(() => !isPullRequest)
 	.WithCriteria(() => isRunningOnAppVeyor)
 	.Does(() => {
 
