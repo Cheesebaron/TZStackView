@@ -549,13 +549,13 @@ namespace TZStackView
                 {
                     var multiplier = subview.IntrinsicContentSize.Width/totalSize;
                     constraints.Add(Constraint(subview, NSLayoutAttribute.Width,
-                        multiplier: (float) multiplier, priority: priority));
+                        multiplier: (float) multiplier, priority: priority, view2: this));
                 }
                 else if (Axis == UILayoutConstraintAxis.Vertical)
                 {
                     var multiplier = subview.IntrinsicContentSize.Height / totalSize;
                     constraints.Add(Constraint(subview, NSLayoutAttribute.Height,
-                        multiplier: (float)multiplier, priority: priority));
+                        multiplier: (float)multiplier, priority: priority, view2: this));
                 }
             }
 
